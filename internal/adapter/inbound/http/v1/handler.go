@@ -19,7 +19,16 @@ func NewHandler(service port.Service, logger log.Logger) *Handler {
 	}
 }
 
-func (h *Handler) HealthCheck(w http.ResponseWriter, _ *http.Request) {
+func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	if err := h.service.HealthCheck(ctx); err != nil {
+		h.logger.Error().Err(err).Msg("health check failed")
+		w.WriteHeader(http.StatusServiceUnavailable)
+		_, _ = w.Write([]byte("Service Unavailable"))
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("OK"))
 }

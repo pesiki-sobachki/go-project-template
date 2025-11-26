@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+
 	"github.com/shanth1/gotools/log"
 	"github.com/shanth1/template/internal/core/port"
 )
@@ -17,4 +19,9 @@ func New(
 	return &Service{
 		logger: logger,
 	}
+}
+
+func (s *Service) HealthCheck(_ context.Context) error {
+	s.logger.Info().Msg("starting health check...")
+	return nil
 }
