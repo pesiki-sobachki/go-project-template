@@ -1,4 +1,48 @@
 package main
 
+import (
+	"flag"
+	"time"
+
+	"github.com/shanth1/gotools/conf"
+	"github.com/shanth1/gotools/consts"
+	"github.com/shanth1/gotools/ctx"
+	"github.com/shanth1/gotools/flags"
+	"github.com/shanth1/gotools/log"
+	"github.com/shanth1/template/internal/config"
+)
+
+type Flags struct {
+	ConfigPath string `flag:"config" usage:"Path to the YAML config file"`
+}
+
 func main() {
+	// TODO: shutdownCtx
+	ctx, _, cancel, shutdownCancel := ctx.WithGracefulShutdown(10 * time.Second)
+	defer cancel()
+	defer shutdownCancel()
+
+	logger := log.New()
+
+	flagCfg := &Flags{}
+	if err := flags.RegisterFromStruct(flagCfg); err != nil {
+		logger.Fatal().Err(err).Msg("register flags")
+	}
+	flag.Parse()
+
+	cfg := &config.Config{}
+	if err := conf.Load(flagCfg.ConfigPath, cfg); err != nil {
+		logger.Fatal().Err(err).Msg("load config")
+	}
+
+	logger = logger.WithOptions(log.WithConfig(log.Config{
+		Level:        "info",
+		App:          "template",
+		Service:      "project",
+		EnableCaller: cfg.Env != consts.EnvProd,
+		Console:      cfg.Env != consts.EnvProd,
+		JSONOutput:   cfg.Env == consts.EnvProd,
+	}))
+
+	ctx = log.NewContext(ctx, logger)
 }
