@@ -1,7 +1,8 @@
 env: "local"
 
 logger:
-    level: "info"
+    level: "trace"
     app: "my-app"
     service: "my-service"
     udp_address: ""
+    enable_caller: false

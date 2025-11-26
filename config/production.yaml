@@ -5,3 +5,4 @@ logger:
     app: "my-app"
     service: "my-service"
     udp_address: ""
+    enable_caller: false

@@ -6,8 +6,9 @@ type Config struct {
 }
 
 type Logger struct {
-	App        string `mapstructure:"app"`
-	Level      string `mapstructure:"level"`
-	Service    string `mapstructure:"service"`
-	UDPAddress string `mapstructure:"udp_address"`
+	App          string `mapstructure:"app"`
+	Level        string `mapstructure:"level"`
+	Service      string `mapstructure:"service"`
+	UDPAddress   string `mapstructure:"udp_address"`
+	EnableCaller bool   `mapstructure:"enable_caller"`
 }

@@ -40,7 +40,7 @@ func main() {
 		App:          cfg.Logger.App,
 		Service:      cfg.Logger.Service,
 		UDPAddress:   cfg.Logger.UDPAddress,
-		EnableCaller: cfg.Env != consts.EnvProd,
+		EnableCaller: cfg.Logger.EnableCaller,
 		Console:      cfg.Env != consts.EnvProd,
 		JSONOutput:   cfg.Env == consts.EnvProd,
 	}))
