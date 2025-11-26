@@ -2,10 +2,13 @@ package app
 
 import (
 	"context"
+	"errors"
+	"net/http"
+	"time"
 
 	"github.com/shanth1/gotools/log"
+	transport "github.com/shanth1/template/internal/adapter/inbound/http"
 	"github.com/shanth1/template/internal/config"
-	"github.com/shanth1/template/internal/core/port"
 	"github.com/shanth1/template/internal/core/service"
 )
 
@@ -14,34 +17,40 @@ func Run(ctx, shutdownCtx context.Context, cfg *config.Config) {
 
 	// TODO: outbound adapters
 
-	service := service.New(logger)
+	svc := service.New(logger)
+	httpHandler := transport.NewRouter(svc, logger)
 
-	runHTTPServer(ctx, shutdownCtx, cfg, service, logger)
-
+	runHTTPServer(ctx, shutdownCtx, cfg, httpHandler, logger)
 }
 
 func runHTTPServer(
 	ctx context.Context,
-	_ context.Context, // TODO: shutdownCtx
+	shutdownCtx context.Context,
 	cfg *config.Config,
-	_ port.Service, // TODO: service
+	handler http.Handler,
 	logger log.Logger,
 ) {
-	// TODO: inbound adapters
+	srv := &http.Server{
+		Addr:         cfg.Addr,
+		Handler:      handler,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
 
 	go func() {
 		logger.Info().Msgf("starting HTTP server on %s", cfg.Addr)
-
-		// TODO: ListenAndServe
-		// if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		// 	logger.Fatal().Err(err).Msg("http server failed")
-		// }
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			logger.Fatal().Err(err).Msg("http server failed")
+		}
 	}()
 
 	<-ctx.Done()
 	logger.Info().Msg("shutting down HTTP server...")
-	// TODO: shutdown
-	// if err := server.Shutdown(shutdownCtx); err != nil {
-	// 	logger.Error().Err(err).Msg("http server graceful shutdown failed")
-	// }
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		logger.Error().Err(err).Msg("http server graceful shutdown failed")
+	} else {
+		logger.Info().Msg("http server stopped gracefully")
+	}
 }
