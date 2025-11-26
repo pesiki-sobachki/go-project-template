@@ -1,6 +1,6 @@
 module github.com/shanth1/template
 
-go 1.24.2
+go 1.23.2
 
 require github.com/shanth1/gotools v1.5.0
 
