@@ -1,7 +1,7 @@
 .PHONY: help test lint fmt vet tidy clean build run
 
 CMD_API_PATH := ./cmd/api
-BINARY_NAME := build
+BINARY_NAME := goproject
 CONFIG_FILE := config/local.yaml
 
 # List of all Go files to track for changes
@@ -41,3 +41,24 @@ run-local: ## Runs applications in local development mode
 
 test: ## Runs tests
 	@go test -v ./...
+
+# --- COMMON ---
+
+clean: ## Remove build artifacts
+	@rm -rf build/
+
+# --- DEPLOY ---
+
+# TODO: docker-compose
+
+docker-build: ## Build docker image
+	@docker build -t $(BINARY_NAME) -f deployments/Dockerfile .
+
+
+# --- LINTER ---
+
+lint: ## Run golangci-lint
+	golangci-lint run ./...
+
+lint-install: ## Install golangci-lint
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
