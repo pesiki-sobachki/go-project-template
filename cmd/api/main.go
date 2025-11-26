@@ -9,6 +9,7 @@ import (
 	"github.com/shanth1/gotools/ctx"
 	"github.com/shanth1/gotools/flags"
 	"github.com/shanth1/gotools/log"
+	"github.com/shanth1/template/internal/app"
 	"github.com/shanth1/template/internal/config"
 )
 
@@ -17,8 +18,7 @@ type Flags struct {
 }
 
 func main() {
-	// TODO: shutdownCtx
-	ctx, _, cancel, shutdownCancel := ctx.WithGracefulShutdown(10 * time.Second)
+	ctx, shutdownCtx, cancel, shutdownCancel := ctx.WithGracefulShutdown(5 * time.Second)
 	defer cancel()
 	defer shutdownCancel()
 
@@ -46,4 +46,5 @@ func main() {
 	}))
 
 	ctx = log.NewContext(ctx, logger)
+	app.Run(ctx, shutdownCtx, cfg)
 }

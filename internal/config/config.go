@@ -2,6 +2,7 @@ package config
 
 type Config struct {
 	Env    string `mapstructure:"env"`
+	Addr   string `mapstructure:"addr"`
 	Logger Logger `mapstructure:"logger"`
 }
 

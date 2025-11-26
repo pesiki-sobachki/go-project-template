@@ -1,5 +1,5 @@
+addr: ":8080"
 env: "production"
-
 logger:
     level: "info"
     app: "my-app"
