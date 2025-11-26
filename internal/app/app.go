@@ -21,10 +21,10 @@ func Run(ctx, shutdownCtx context.Context, cfg *config.Config) {
 }
 
 func runHTTPServer(
-	ctx,
-	shutdownCtx context.Context,
+	ctx context.Context,
+	_ context.Context, // TODO: shutdownCtx
 	cfg *config.Config,
-	service port.Service,
+	_ port.Service, // TODO: service
 	logger log.Logger,
 ) {
 	// TODO: inbound adapters
