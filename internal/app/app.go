@@ -5,15 +5,18 @@ import (
 
 	"github.com/shanth1/gotools/log"
 	"github.com/shanth1/template/internal/config"
+	"github.com/shanth1/template/internal/core/port"
+	"github.com/shanth1/template/internal/core/service"
 )
 
 func Run(ctx, shutdownCtx context.Context, cfg *config.Config) {
 	logger := log.FromContext(ctx)
 
 	// TODO: outbound adapters
-	// TODO: service init
 
-	runHTTPServer(ctx, shutdownCtx, cfg, nil, logger) // TODO: service
+	service := service.New(logger)
+
+	runHTTPServer(ctx, shutdownCtx, cfg, service, logger)
 
 }
 
@@ -21,7 +24,7 @@ func runHTTPServer(
 	ctx,
 	shutdownCtx context.Context,
 	cfg *config.Config,
-	service interface{}, // TODO: port.Service
+	service port.Service,
 	logger log.Logger,
 ) {
 	// TODO: inbound adapters
