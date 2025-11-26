@@ -1,1 +1,7 @@
 env: "production"
+
+logger:
+    level: "info"
+    app: "my-app"
+    service: "my-service"
+    udp_address: ""
