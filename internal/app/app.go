@@ -18,7 +18,7 @@ func Run(ctx, shutdownCtx context.Context, cfg *config.Config) {
 	// TODO: outbound adapters
 
 	svc := service.New(logger)
-	httpHandler := transport.NewRouter(svc, logger)
+	httpHandler := transport.NewRouter(cfg.HTTP, svc, logger)
 
 	runHTTPServer(ctx, shutdownCtx, cfg, httpHandler, logger)
 }
@@ -31,11 +31,12 @@ func runHTTPServer(
 	logger log.Logger,
 ) {
 	srv := &http.Server{
-		Addr:         cfg.Addr,
-		Handler:      handler,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		Addr:              cfg.Addr,
+		Handler:           handler,
+		ReadTimeout:       cfg.HTTP.ReadTimeout,
+		WriteTimeout:      cfg.HTTP.WriteTimeout,
+		IdleTimeout:       cfg.HTTP.IdleTimeout,
+		ReadHeaderTimeout: 2 * time.Second,
 	}
 
 	go func() {
