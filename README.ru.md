@@ -1,7 +1,7 @@
 # 🚀 Golang Project
 
 <div align="center">
-	<strong>EN</strong> | <a href="README.ru.md">RU</a>
+	<a href="README.md">EN</a> | <strong>RU</strong>
 </div>
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](/LICENSE)
