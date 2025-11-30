@@ -1,5 +1,19 @@
+# Binaries
+/build
+/bin
+*.exe
+
+# Local config & secrets
+.env
+config/local.yaml
+*.local.yaml
+
+# IDE
+.idea/
+.vscode/
+
+# OS specific
 .DS_Store
 
-build//
-
-.env
+# Vendor (if needed, but usually ignored in modules mode)
+vendor/
