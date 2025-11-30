@@ -19,6 +19,13 @@ linters:
     - unconvert
     - goconst
 
+    - bodyclose
+    - nilerr
+    - noctx
+    - gocritic
+    - gocyclo
+    - prealloc
+
 linters-settings:
   goconst:
     min-len: 2
