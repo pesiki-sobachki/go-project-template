@@ -17,12 +17,12 @@ func JSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	if data != nil {
-		json.NewEncoder(w).Encode(successResponse{Data: data})
+		_ = json.NewEncoder(w).Encode(successResponse{Data: data})
 	}
 }
 
 func WithError(w http.ResponseWriter, status int, err error) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(errorResponse{Error: err.Error()})
+	_ = json.NewEncoder(w).Encode(errorResponse{Error: err.Error()})
 }
