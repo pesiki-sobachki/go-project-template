@@ -64,3 +64,9 @@ lint: ## Run golangci-lint
 
 lint-install: ## Install golangci-lint
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+# --- MOCKS ---
+
+mocks: ## Generate all mocks using //go:generate
+	@echo "Generating mocks..."
+	@go generate ./...
