@@ -7,7 +7,6 @@
 <br />
 
 <div align="center">
-    <a href="https://github.com/shanth1/template/actions"><img src="https://github.com/shanth1/template/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
     <a href="/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License"></a>
     <img src="https://img.shields.io/badge/go-1.23+-00ADD8?style=flat-square&logo=go" alt="Go Version">
 </div>
