@@ -18,7 +18,7 @@ func Run(ctx, shutdownCtx context.Context, cfg *config.Config) {
 	// TODO: outbound adapters
 
 	svc := service.New(logger)
-	httpHandler := transport.NewRouter(cfg.HTTP, svc, logger)
+	httpHandler := transport.NewRouter(cfg, svc, logger)
 
 	runHTTPServer(ctx, shutdownCtx, cfg, httpHandler, logger)
 }

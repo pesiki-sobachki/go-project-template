@@ -8,6 +8,7 @@ import (
 	_ "github.com/shanth1/template/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
 
+	"github.com/shanth1/gotools/consts"
 	"github.com/shanth1/gotools/log"
 	httpMw "github.com/shanth1/template/internal/adapter/inbound/http/middleware"
 	v1 "github.com/shanth1/template/internal/adapter/inbound/http/v1"
@@ -15,20 +16,23 @@ import (
 	"github.com/shanth1/template/internal/core/port"
 )
 
-func NewRouter(cfg config.HTTPConfig, service port.Service, logger log.Logger) http.Handler {
+func NewRouter(cfg *config.Config, service port.Service, logger log.Logger) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(httpMw.Logger(logger))
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(cfg.RequestTimeout))
+	r.Use(middleware.Timeout(cfg.HTTP.RequestTimeout))
+
+	if cfg.Env != consts.EnvProd {
+		logger.Info().Msg("Swagger UI enabled at /swagger/index.html")
+		r.Get("/swagger/*", httpSwagger.Handler(
+			httpSwagger.URL("/swagger/doc.json"),
+		))
+	}
 
 	handlerV1 := v1.NewHandler(service, logger)
-
-	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("doc.json"),
-	))
 	r.Get("/health", handlerV1.HealthCheck)
 	r.Route("/api/v1", func(_ chi.Router) {
 		// r.Post("/users", handlerV1.CreateUser)

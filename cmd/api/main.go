@@ -40,7 +40,7 @@ type Flags struct {
 func main() {
 	fmt.Printf("Starting Service\nCommit: %s\nBuild Time: %s\n", CommitHash, BuildTime)
 
-	ctx, shutdownCtx, cancel, shutdownCancel := ctx.WithGracefulShutdown(5 * time.Second)
+	ctx, shutdownCtx, cancel, shutdownCancel := ctx.WithGracefulShutdown(10 * time.Second)
 	defer cancel()
 	defer shutdownCancel()
 
