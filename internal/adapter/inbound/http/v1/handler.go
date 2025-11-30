@@ -5,6 +5,7 @@ import (
 
 	"github.com/shanth1/gotools/log"
 	"github.com/shanth1/template/internal/core/port"
+	"github.com/shanth1/template/internal/pkg/response"
 )
 
 type Handler struct {
@@ -24,11 +25,9 @@ func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.service.HealthCheck(ctx); err != nil {
 		h.logger.Error().Err(err).Msg("health check failed")
-		w.WriteHeader(http.StatusServiceUnavailable)
-		_, _ = w.Write([]byte("Service Unavailable"))
+		response.WithError(w, http.StatusServiceUnavailable, err)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("OK"))
+	response.JSON(w, http.StatusOK, map[string]string{"status": "OK"})
 }
