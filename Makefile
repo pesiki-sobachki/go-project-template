@@ -8,18 +8,40 @@ CONFIG_FILE := config/local.yaml
 GOFILES := $(shell find . -name '*.go' -not -path "./vendor/*")
 
 help: ## Show this help message
-	@echo "Usage: make <command>"
-	@echo ""
-	@echo "Available commands:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@awk 'BEGIN {FS = ":.*##"; printf "\n\033[1mUsage:\033[0m\n  make \033[36m<target>\033[0m\n"} \
+	/^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2 } \
+	/^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-# --- ENV ---
+##@ Environment
 
 env: ## Safely creates a .env file based on .env.example
 	@cp -n .env.example .env || true
 
-# --- BUILDS ---
+# --- Development ---
+
+run-local: ## Runs applications in local development mode
+	@go run cmd/api/main.go --config $(CONFIG_FILE)
+
+AIR_BIN := $(shell go env GOPATH)/bin/air
+run-watch: ## Run with live reload
+	$(AIR_BIN) -c .air.toml
+
+mocks: ## Generate all mocks using //go:generate
+	@echo "Generating mocks..."
+	@go generate ./...
+
+##@ Testing & Quality
+
+test: ## Runs tests
+	@go test -v ./...
+
+lint: ## Run golangci-lint
+	golangci-lint run ./...
+
+lint-install: ## Install golangci-lint
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+##@ Builds
 
 build: $(GOFILES) ## Builds api application
 	@echo "Building $(BINARY_NAME)..."
@@ -31,42 +53,12 @@ build-linux: $(GOFILES) ## Builds api application for linux
 	@GOOS=linux GOARCH=amd64 go build -o build/$(BINARY_NAME) $(CMD_API_PATH)
 	@echo "Build of build/$(BINARY_NAME) complete."
 
-# --- RUN ---
-
-run-local: ## Runs applications in local development mode
-	@go run cmd/api/main.go --config $(CONFIG_FILE)
-
-AIR_BIN := $(shell go env GOPATH)/bin/air
-run-watch: ## Run with live reload
-	$(AIR_BIN) -c .air.toml
-# --- TEST ---
-
-test: ## Runs tests
-	@go test -v ./...
-
-# --- COMMON ---
-
 clean: ## Remove build artifacts
 	@rm -rf build/
 
-# --- DEPLOY ---
+##@ Deployment
 
 # TODO: docker-compose
 
 docker-build: ## Build docker image
 	@docker build -t $(BINARY_NAME) -f deployments/Dockerfile .
-
-
-# --- LINTER ---
-
-lint: ## Run golangci-lint
-	golangci-lint run ./...
-
-lint-install: ## Install golangci-lint
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-
-# --- MOCKS ---
-
-mocks: ## Generate all mocks using //go:generate
-	@echo "Generating mocks..."
-	@go generate ./...
