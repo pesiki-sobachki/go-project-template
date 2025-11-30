@@ -1,11 +1,17 @@
-.PHONY: help test lint fmt vet tidy clean build run
+.PHONY: help test lint clean build run docker-build
 
-CMD_API_PATH := ./cmd/api
+# --- Project Variables ---
 BINARY_NAME := goproject
+CMD_API_PATH := ./cmd/api
 CONFIG_FILE := config/local.yaml
 
-# List of all Go files to track for changes
-GOFILES := $(shell find . -name '*.go' -not -path "./vendor/*")
+# --- Build Variables ---
+COMMIT_HASH := $(shell git rev-parse --short HEAD 2>/dev/null || echo "none")
+BUILD_TIME := $(shell date +%FT%T%z)
+LDFLAGS := -ldflags "-X main.CommitHash=$(COMMIT_HASH) -X main.BuildTime=$(BUILD_TIME) -s -w"
+
+# --- Docker Variables ---
+DOCKER_TAG := $(COMMIT_HASH)
 
 help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*##"; printf "\n\033[1mUsage:\033[0m\n  make \033[36m<target>\033[0m\n"} \
@@ -14,26 +20,25 @@ help: ## Show this help message
 
 ##@ Environment
 
-env: ## Safely creates a .env file based on .env.example
+env: ## Create .env file from example
 	@cp -n .env.example .env || true
 
-# --- Development ---
+##@ Development
 
-run-local: ## Runs applications in local development mode
-	@go run cmd/api/main.go --config $(CONFIG_FILE)
+run-local: ## Run app in local mode
+	@go run $(CMD_API_PATH) --config $(CONFIG_FILE)
 
-AIR_BIN := $(shell go env GOPATH)/bin/air
-run-watch: ## Run with live reload
-	$(AIR_BIN) -c .air.toml
+run-watch: ## Run with live reload (requires 'air' in PATH)
+	@air -c .air.toml
 
-mocks: ## Generate all mocks using //go:generate
+mocks: ## Generate all mocks
 	@echo "Generating mocks..."
 	@go generate ./...
 
 ##@ Testing & Quality
 
-test: ## Runs tests
-	@go test -v ./...
+test: ## Run unit tests
+	@go test -v -race ./...
 
 lint: ## Run golangci-lint
 	golangci-lint run ./...
@@ -43,22 +48,21 @@ lint-install: ## Install golangci-lint
 
 ##@ Builds
 
-build: $(GOFILES) ## Builds api application
+build: ## Build binary for current OS
 	@echo "Building $(BINARY_NAME)..."
-	@go build -o build/$(BINARY_NAME) $(CMD_API_PATH)
-	@echo "Build of build/$(BINARY_NAME) complete."
+	@go build $(LDFLAGS) -o build/$(BINARY_NAME) $(CMD_API_PATH)
+	@echo "Build complete: build/$(BINARY_NAME)"
 
-build-linux: $(GOFILES) ## Builds api application for linux
-	@echo "Building $(BINARY_NAME) for Linux..."
-	@GOOS=linux GOARCH=amd64 go build -o build/$(BINARY_NAME) $(CMD_API_PATH)
-	@echo "Build of build/$(BINARY_NAME) complete."
+build-linux: ## Build binary for Linux (AMD64)
+	@echo "Building Linux binary..."
+	@GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o build/$(BINARY_NAME)-linux $(CMD_API_PATH)
+	@echo "Build complete: build/$(BINARY_NAME)-linux"
 
 clean: ## Remove build artifacts
 	@rm -rf build/
 
 ##@ Deployment
 
-# TODO: docker-compose
-
-docker-build: ## Build docker image
-	@docker build -t $(BINARY_NAME) -f deployments/Dockerfile .
+docker-build: ## Build docker image with commit tag
+	@echo "Building Docker image $(BINARY_NAME):$(DOCKER_TAG)..."
+	@docker build -t $(BINARY_NAME):$(DOCKER_TAG) -t $(BINARY_NAME):latest -f deployments/Dockerfile .

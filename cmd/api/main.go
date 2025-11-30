@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"time"
 
 	"github.com/shanth1/gotools/conf"
@@ -13,11 +14,18 @@ import (
 	"github.com/shanth1/template/internal/config"
 )
 
+var (
+	CommitHash = "n/a"
+	BuildTime  = "n/a"
+)
+
 type Flags struct {
 	ConfigPath string `flag:"config" usage:"Path to the YAML config file"`
 }
 
 func main() {
+	fmt.Printf("Starting Service\nCommit: %s\nBuild Time: %s\n", CommitHash, BuildTime)
+
 	ctx, shutdownCtx, cancel, shutdownCancel := ctx.WithGracefulShutdown(5 * time.Second)
 	defer cancel()
 	defer shutdownCancel()
