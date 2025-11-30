@@ -1,0 +1,51 @@
+basePath: /
+definitions:
+  response.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  response.Response-v1_HealthResponse:
+    properties:
+      data:
+        $ref: '#/definitions/v1.HealthResponse'
+    type: object
+  v1.HealthResponse:
+    properties:
+      status:
+        example: OK
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server following Hexagonal Architecture.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Golang Project Template API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response-v1_HealthResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Health Check
+      tags:
+      - system
+swagger: "2.0"

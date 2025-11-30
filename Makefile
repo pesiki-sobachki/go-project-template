@@ -1,4 +1,4 @@
-.PHONY: help test lint clean build run docker-build
+.PHONY: help test lint clean build run docker-build swagger
 
 # --- Project Variables ---
 BINARY_NAME := goproject
@@ -25,15 +25,21 @@ env: ## Create .env file from example
 
 ##@ Development
 
-run-local: ## Run app in local mode
+run-local: swagger ## Run app in local mode (generates swagger first)
 	@go run $(CMD_API_PATH) --config $(CONFIG_FILE)
 
-run-watch: ## Run with live reload (requires 'air' in PATH)
-	@air -c .air.toml
+AIR_BIN := $(shell go env GOPATH)/bin/air
+run-watch: ## Run with live reload
+	$(AIR_BIN) -c .air.toml
 
 mocks: ## Generate all mocks
 	@echo "Generating mocks..."
 	@go generate ./...
+
+swagger: ## Generate Swagger documentation
+	@echo "Generating swagger docs..."
+	@go install github.com/swaggo/swag/cmd/swag@latest
+	@swag init -g cmd/api/main.go --output docs --parseDependency --parseInternal
 
 ##@ Testing & Quality
 
@@ -48,12 +54,12 @@ lint-install: ## Install golangci-lint
 
 ##@ Builds
 
-build: ## Build binary for current OS
+build: swagger ## Build binary for current OS
 	@echo "Building $(BINARY_NAME)..."
 	@go build $(LDFLAGS) -o build/$(BINARY_NAME) $(CMD_API_PATH)
 	@echo "Build complete: build/$(BINARY_NAME)"
 
-build-linux: ## Build binary for Linux (AMD64)
+build-linux: swagger ## Build binary for Linux (AMD64)
 	@echo "Building Linux binary..."
 	@GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o build/$(BINARY_NAME)-linux $(CMD_API_PATH)
 	@echo "Build complete: build/$(BINARY_NAME)-linux"

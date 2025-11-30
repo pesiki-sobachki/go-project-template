@@ -23,6 +23,20 @@ type Flags struct {
 	ConfigPath string `flag:"config" usage:"Path to the YAML config file"`
 }
 
+// @title           Golang Project Template API
+// @version         1.0
+// @description     This is a sample server following Hexagonal Architecture.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name    API Support
+// @contact.url     http://www.swagger.io/support
+// @contact.email   support@swagger.io
+
+// @license.name    MIT
+// @license.url     https://opensource.org/licenses/MIT
+
+// @host            localhost:8080
+// @BasePath        /
 func main() {
 	fmt.Printf("Starting Service\nCommit: %s\nBuild Time: %s\n", CommitHash, BuildTime)
 

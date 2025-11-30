@@ -5,6 +5,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	_ "github.com/shanth1/template/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	"github.com/shanth1/gotools/log"
 	httpMw "github.com/shanth1/template/internal/adapter/inbound/http/middleware"
@@ -24,6 +26,9 @@ func NewRouter(cfg config.HTTPConfig, service port.Service, logger log.Logger) h
 
 	handlerV1 := v1.NewHandler(service, logger)
 
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("doc.json"),
+	))
 	r.Get("/health", handlerV1.HealthCheck)
 	r.Route("/api/v1", func(_ chi.Router) {
 		// r.Post("/users", handlerV1.CreateUser)
