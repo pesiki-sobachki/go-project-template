@@ -1,4 +1,4 @@
-.PHONY: help test lint clean build run docker-build swagger
+.PHONY: help test lint clean build run docker-build swagger install-swag
 
 # --- Project Variables ---
 BINARY_NAME := goproject
@@ -38,8 +38,14 @@ mocks: ## Generate all mocks
 	@echo "Generating mocks..."
 	@go generate ./...
 
+install-swag:
+	@if [ ! -f $(SWAG_BIN) ]; then \
+		echo "Installing swag..."; \
+		GOBIN=$(LOCAL_BIN) go install github.com/swaggo/swag/cmd/swag@latest; \
+	fi
+
 SWAG_CMD := go run github.com/swaggo/swag/cmd/swag@latest
-swagger: ## Generate Swagger documentation
+swagger: install-swag ## Generate Swagger documentation
 	@echo "Generating swagger docs..."
 	@$(SWAG_CMD) init -g cmd/api/main.go --output docs --parseDependency --parseInternal
 
