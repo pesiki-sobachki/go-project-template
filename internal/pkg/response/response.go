@@ -16,8 +16,8 @@ type ErrorResponse struct {
 func JSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	if data != nil {
-		_ = json.NewEncoder(w).Encode(Response[interface{}]{Data: data})
+	if err := json.NewEncoder(w).Encode(Response[interface{}]{Data: data}); err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 }
 

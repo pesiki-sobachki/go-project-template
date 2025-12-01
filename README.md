@@ -118,7 +118,7 @@ The project follows the standard Go project layout and Hexagonal Architecture pr
 │   │   ├── domain/         # Domain Entities
 │   │   ├── port/           # Interfaces (Ports) for Inbound/Outbound
 │   │   └── service/        # Business logic implementation
-│   └── lib/                # Shared internal libraries (response helpers, etc.)
+│   └── pkg/                # Shared internal packages (response helpers, etc.)
 └── Makefile                # Useful automation commands
 ```
 
