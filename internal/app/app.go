@@ -15,7 +15,8 @@ import (
 func Run(ctx, shutdownCtx context.Context, cfg *config.Config) {
 	logger := log.FromContext(ctx)
 
-	// TODO: outbound adapters
+	// TODO: outbound adapters (repo, cache, filestorage, etc.)
+	// outbound adapter -> service constructor
 
 	svc := service.New(logger)
 	httpHandler := transport.NewRouter(cfg, svc, logger)

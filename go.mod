@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	github.com/go-chi/chi/v5 v5.2.3
+	github.com/go-chi/cors v1.2.2
 	github.com/shanth1/gotools v1.5.0
 	github.com/stretchr/testify v1.11.1
 	github.com/swaggo/http-swagger v1.3.4
