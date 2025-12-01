@@ -41,6 +41,10 @@ swagger: ## Generate Swagger documentation
 	@go install github.com/swaggo/swag/cmd/swag@latest
 	@swag init -g cmd/api/main.go --output docs --parseDependency --parseInternal
 
+audit: ## Run vulnerability check and verify dependencies
+	go list -u -m all
+	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+
 ##@ Testing & Quality
 
 test: ## Run unit tests
