@@ -8,7 +8,9 @@ CONFIG_FILE := config/local.yaml
 # --- Build Variables ---
 COMMIT_HASH := $(shell git rev-parse --short HEAD 2>/dev/null || echo "none")
 BUILD_TIME := $(shell date +%FT%T%z)
-LDFLAGS := -ldflags "-X main.CommitHash=$(COMMIT_HASH) -X main.BuildTime=$(BUILD_TIME) -s -w"
+
+LDFLAGS := -ldflags "-s -w -X main.CommitHash=$(COMMIT_HASH) -X main.BuildTime=$(BUILD_TIME)"
+GO_BUILD_FLAGS := -trimpath
 
 # --- Docker Variables ---
 DOCKER_TAG := $(COMMIT_HASH)
@@ -60,12 +62,12 @@ lint-install: ## Install golangci-lint
 
 build: swagger ## Build binary for current OS
 	@echo "Building $(BINARY_NAME)..."
-	@go build $(LDFLAGS) -o build/$(BINARY_NAME) $(CMD_API_PATH)
+	@CGO_ENABLED=0 go build $(GO_BUILD_FLAGS) $(LDFLAGS) -o build/$(BINARY_NAME) $(CMD_API_PATH)
 	@echo "Build complete: build/$(BINARY_NAME)"
 
 build-linux: swagger ## Build binary for Linux (AMD64)
 	@echo "Building Linux binary..."
-	@GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o build/$(BINARY_NAME)-linux $(CMD_API_PATH)
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $(GO_BUILD_FLAGS) $(LDFLAGS) -o build/$(BINARY_NAME)-linux $(CMD_API_PATH)
 	@echo "Build complete: build/$(BINARY_NAME)-linux"
 
 clean: ## Remove build artifacts
