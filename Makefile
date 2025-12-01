@@ -27,7 +27,7 @@ env: ## Create .env file from example
 
 ##@ Development
 
-run-local: swagger ## Run app in local mode (generates swagger first)
+run-local: ## Run app in local mode
 	@go run $(CMD_API_PATH) --config $(CONFIG_FILE)
 
 AIR_BIN := $(shell go env GOPATH)/bin/air
