@@ -36,10 +36,10 @@ mocks: ## Generate all mocks
 	@echo "Generating mocks..."
 	@go generate ./...
 
+SWAG_CMD := go run github.com/swaggo/swag/cmd/swag@latest
 swagger: ## Generate Swagger documentation
 	@echo "Generating swagger docs..."
-	@go install github.com/swaggo/swag/cmd/swag@latest
-	@swag init -g cmd/api/main.go --output docs --parseDependency --parseInternal
+	@$(SWAG_CMD) init -g cmd/api/main.go --output docs --parseDependency --parseInternal
 
 audit: ## Run vulnerability check and verify dependencies
 	go list -u -m all
