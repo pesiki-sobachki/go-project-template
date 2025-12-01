@@ -57,6 +57,10 @@ func main() {
 		logger.Fatal().Err(err).Msg("load config")
 	}
 
+	if err := cfg.Validate(); err != nil {
+		logger.Fatal().Err(err).Msg("invalid configuration")
+	}
+
 	logger = logger.WithOptions(log.WithConfig(log.Config{
 		Level:        cfg.Logger.Level,
 		App:          cfg.Logger.App,
