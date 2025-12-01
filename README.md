@@ -57,7 +57,7 @@ A fast Go linters runner.
 brew install golangci-lint
 
 # Or via Go install
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.0
 ```
 
 **3. Mockgen (Testing)**
