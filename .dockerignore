@@ -1,0 +1,13 @@
+.git
+.github
+.vscode
+.idea
+bin/
+build/
+tmp/
+coverage.out
+.env
+config/local.yaml
+docker-compose.yml
+Makefile
+README.md
