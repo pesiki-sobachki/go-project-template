@@ -21,6 +21,7 @@ This is a production-ready template for Go microservices following the **Hexagon
 - [1. Getting Started](#1-getting-started)
 - [2. Project Structure](#2-project-structure)
 - [3. Development & Testing](#3-development--testing)
+  - [Swagger Documentation](#swagger-documentation)
   - [Live Reload](#live-reload)
   - [Mocks Generation](#mocks-generation)
   - [Linting](#linting)
@@ -125,6 +126,19 @@ The project follows the standard Go project layout and Hexagonal Architecture pr
 ---
 
 ## 3. Development & Testing
+
+### Swagger Documentation
+
+The API documentation is generated automatically from code comments using [swag](https://github.com/swaggo/swag).
+
+- **Access:** `http://localhost:8080/swagger/index.html` (enabled in non-production environments).
+- **Development:** To keep local builds fast, documentation is **not** regenerated automatically during `run-local` or `run-watch`. If you modify API comments, run:
+
+  ```bash
+  make swagger
+  ```
+
+- **Build:** The `make build` command automatically regenerates the documentation to ensure the release artifact is always up-to-date.
 
 ### Live Reload
 
