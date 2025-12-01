@@ -8,7 +8,7 @@
 
 <div align="center">
     <a href="/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License"></a>
-    <img src="https://img.shields.io/badge/go-1.23+-00ADD8?style=flat-square&logo=go" alt="Go Version">
+    <img src="https://img.shields.io/badge/go-1.24+-00ADD8?style=flat-square&logo=go" alt="Go Version">
 </div>
 
 <br />
@@ -31,7 +31,7 @@ This is a production-ready template for Go microservices following the **Hexagon
 
 ## 0. Prerequisites & Tools
 
-Before you start, ensure you have **Go (1.23+)** and **Docker** installed.
+Before you start, ensure you have **Go (1.24+)** and **Docker** installed.
 
 This project relies on standard Go tools for a smooth development experience. While optional, they are highly recommended.
 

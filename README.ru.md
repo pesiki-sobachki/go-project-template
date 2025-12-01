@@ -8,7 +8,7 @@
 
 <div align="center">
     <a href="/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License"></a>
-    <img src="https://img.shields.io/badge/go-1.23+-00ADD8?style=flat-square&logo=go" alt="Go Version">
+    <img src="https://img.shields.io/badge/go-1.24+-00ADD8?style=flat-square&logo=go" alt="Go Version">
 </div>
 
 <br />
@@ -31,7 +31,7 @@
 
 ## 0. Требования и инструменты
 
-Перед началом работы убедитесь, что у вас установлены **Go (1.23+)** и **Docker**.
+Перед началом работы убедитесь, что у вас установлены **Go (1.24+)** и **Docker**.
 
 Проект использует стандартные инструменты экосистемы Go для удобства разработки.
 
