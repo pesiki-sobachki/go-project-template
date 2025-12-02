@@ -8,6 +8,7 @@ import (
 	"github.com/shanth1/gotools/conf"
 	"github.com/shanth1/gotools/consts"
 	"github.com/shanth1/gotools/ctx"
+	"github.com/shanth1/gotools/env"
 	"github.com/shanth1/gotools/flags"
 	"github.com/shanth1/gotools/log"
 	"github.com/shanth1/template/internal/app"
@@ -21,6 +22,7 @@ var (
 
 type Flags struct {
 	ConfigPath string `flag:"config" usage:"Path to the YAML config file"`
+	EnvPath    string `flag:"env" default:".env" usage:"Path to the env file (.env by default)"`
 }
 
 // @title           Golang Project Template API
@@ -55,6 +57,10 @@ func main() {
 	cfg := &config.Config{}
 	if err := conf.Load(flagCfg.ConfigPath, cfg); err != nil {
 		logger.Fatal().Err(err).Msg("load config")
+	}
+
+	if err := env.LoadIntoStruct(flagCfg.EnvPath, cfg); err != nil {
+		logger.Fatal().Err(err).Msg("load env into struct")
 	}
 
 	if err := cfg.Validate(); err != nil {

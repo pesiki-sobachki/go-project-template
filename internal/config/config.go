@@ -7,13 +7,14 @@ import (
 )
 
 type Config struct {
-	Env    string     `mapstructure:"env" yaml:"env" validate:"required,oneof=local development production"`
-	Addr   string     `mapstructure:"addr" yaml:"addr" validate:"required,hostname_port"`
-	HTTP   HTTPConfig `mapstructure:"http" yaml:"http" validate:"required"`
-	Logger Logger     `mapstructure:"logger" yaml:"logger" validate:"required"`
+	Env     string  `mapstructure:"env" yaml:"env" validate:"required,oneof=local development production"`
+	Addr    string  `mapstructure:"addr" yaml:"addr" validate:"required,hostname_port"`
+	HTTP    HTTP    `mapstructure:"http" yaml:"http" validate:"required"`
+	Logger  Logger  `mapstructure:"logger" yaml:"logger" validate:"required"`
+	Metrics Metrics `mapstructure:"metrics" yaml:"metrics"`
 }
 
-type HTTPConfig struct {
+type HTTP struct {
 	ReadTimeout    time.Duration `mapstructure:"read_timeout" yaml:"read_timeout" validate:"min=100ms"`
 	WriteTimeout   time.Duration `mapstructure:"write_timeout" yaml:"write_timeout" validate:"min=100ms"`
 	IdleTimeout    time.Duration `mapstructure:"idle_timeout" yaml:"idle_timeout" validate:"min=1s"`
@@ -26,6 +27,11 @@ type Logger struct {
 	Service      string `mapstructure:"service" yaml:"service" validate:"required"`
 	UDPAddress   string `mapstructure:"udp_address" yaml:"udp_address" validate:"omitempty,hostname_port"`
 	EnableCaller bool   `mapstructure:"enable_caller" yaml:"enable_caller"`
+}
+
+type Metrics struct {
+	User     string `env:"METRICS_USER"`
+	Password string `env:"METRICS_PASSWORD"`
 }
 
 func (c *Config) Validate() error {
