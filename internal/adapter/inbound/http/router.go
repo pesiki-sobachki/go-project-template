@@ -27,6 +27,8 @@ func NewRouter(cfg *config.Config, service port.Service, logger log.Logger) http
 	r.Use(middleware.RealIP)
 	r.Use(httpMw.Logger(logger))
 	r.Use(middleware.Recoverer)
+	r.Use(httpMw.SecureHeaders)
+	r.Use(httpMw.RequestSizeLimit(2 * 1024 * 1024)) // 2 MB
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -51,7 +53,12 @@ func NewRouter(cfg *config.Config, service port.Service, logger log.Logger) http
 
 	handlerV1 := v1.NewHandler(service, logger)
 	r.Get("/health", handlerV1.HealthCheck)
-	r.Handle("/metrics", promhttp.Handler())
+	r.Group(func(sys chi.Router) {
+		if cfg.Metrics.User != "" && cfg.Metrics.Password != "" {
+			sys.Use(httpMw.BasicAuth(cfg.Metrics.User, cfg.Metrics.Password))
+		}
+		sys.Handle("/metrics", promhttp.Handler())
+	})
 	r.Route("/api/v1", func(_ chi.Router) {
 		// r.Post("/users", handlerV1.CreateUser)
 	})
