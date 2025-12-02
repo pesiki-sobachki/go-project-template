@@ -84,3 +84,11 @@ clean: ## Remove build artifacts
 docker-build: ## Build docker image with commit tag
 	@echo "Building Docker image $(BINARY_NAME):$(DOCKER_TAG)..."
 	@docker build -t $(BINARY_NAME):$(DOCKER_TAG) -t $(BINARY_NAME):latest -f deployments/Dockerfile .
+
+##@ Quality Control
+
+format: ## Format code
+	go fmt ./...
+
+# Объединяем всё в одну команду
+check: format swagger lint test audit ## Run all checks before commit
