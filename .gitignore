@@ -4,10 +4,8 @@
 /tmp
 *.exe
 
-# Local config & secrets
+# Secrets
 .env
-config/local.yaml
-*.local.yaml
 
 # IDE
 .idea/
