@@ -41,7 +41,7 @@ run-prod: ## Run app in prod mode
 	@go run $(CMD_API_PATH) --env=prod --env-path=.env
 
 AIR_BIN := $(shell go env GOPATH)/bin/air
-run-watch: ## Run with live reload
+run-watch: ## Run with live reload (local mode)
 	$(AIR_BIN) -c .air.toml
 
 mocks: ## Generate all mocks
