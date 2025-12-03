@@ -27,7 +27,6 @@ func NewRouter(cfg *config.Config, service port.Service, logger log.Logger) http
 	r.Use(middleware.RealIP)
 	r.Use(httpMw.Logger(logger))
 	r.Use(middleware.Recoverer)
-	r.Use(httpMw.SecureHeaders)
 	r.Use(httpMw.RequestSizeLimit(2 * 1024 * 1024)) // 2 MB
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},

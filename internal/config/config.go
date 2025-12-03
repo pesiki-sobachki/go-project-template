@@ -38,8 +38,8 @@ type Logger struct {
 }
 
 type Metrics struct {
-	User     string `env:"METRICS_USER"`
-	Password string `env:"METRICS_PASSWORD"`
+	User     string `mapstructure:"user" yaml:"user" env:"METRICS_USER"`
+	Password string `mapstructure:"password" yaml:"password" env:"METRICS_PASSWORD"`
 }
 
 func (c *Config) Validate() error {

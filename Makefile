@@ -28,9 +28,17 @@ env: ## Create .env file from example
 
 ##@ Development
 
-# env mode can also be set via APP_ENV environment variable
+# env mode can be set via APP_ENV environment variable
+# you can also include the .env configuration file via --env-path flag
+
 run-local: ## Run app in local mode
 	@go run $(CMD_API_PATH) --env=local
+
+run-dev: ## Run app in dev mode
+	@go run $(CMD_API_PATH) --env=dev --env-path=.env
+
+run-prod: ## Run app in prod mode
+	@go run $(CMD_API_PATH) --env=prod --env-path=.env
 
 AIR_BIN := $(shell go env GOPATH)/bin/air
 run-watch: ## Run with live reload
