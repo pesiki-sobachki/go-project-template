@@ -22,7 +22,7 @@ var (
 
 type Flags struct {
 	ConfigPath string `flag:"config" usage:"Path to the YAML config file"`
-	EnvPath    string `flag:"env" default:".env" usage:"Path to the env file (.env by default)"`
+	EnvPath    string `flag:"env" default:"" usage:"Path to the env file (empty by default)"`
 }
 
 // @title           Golang Project Template API
