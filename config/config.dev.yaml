@@ -15,4 +15,4 @@ logger:
 
 metrics:
   user: admin
-  password: password2
+  password: password
