@@ -31,5 +31,7 @@ COPY --from=builder /app/config /config
 
 USER appuser:appuser
 
+ENV APP_ENV=production
+
 ENTRYPOINT ["/server"]
-CMD ["--config", "config/production.yaml"]
+CMD []

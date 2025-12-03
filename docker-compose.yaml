@@ -5,12 +5,9 @@ services:
       dockerfile: deployments/Dockerfile
     container_name: goproject-api
     ports:
-      - "8080:8080"
+      - '8080:8080'
     volumes:
       - ./config:/config
-    command: ["--config", "/config/config.local.yaml"]
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+
+    environment:
+      - APP_ENV=${APP_ENV:-local}
