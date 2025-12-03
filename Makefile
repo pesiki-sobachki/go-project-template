@@ -2,7 +2,7 @@
 
 # --- Project Variables ---
 BINARY_NAME := goproject
-CMD_API_PATH := ./cmd/api
+CMD_API_PATH := ./cmd/api/main.go
 
 CONFIG_FILE := config/config.local.yaml
 
@@ -57,7 +57,7 @@ install-swag:
 SWAG_CMD := go run github.com/swaggo/swag/cmd/swag@latest
 swagger: install-swag ## Generate Swagger documentation
 	@echo "Generating swagger docs..."
-	@$(SWAG_CMD) init -g cmd/api/main.go --output docs --parseDependency --parseInternal
+	@$(SWAG_CMD) init -g $(CMD_API_PATH) --output docs --parseDependency --parseInternal
 
 audit: ## Run vulnerability check and verify dependencies
 	go list -u -m all
