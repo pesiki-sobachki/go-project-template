@@ -3,6 +3,7 @@
 # --- Project Variables ---
 BINARY_NAME := goproject
 CMD_API_PATH := ./cmd/api
+
 CONFIG_FILE := config/config.local.yaml
 
 # --- Build Variables ---
@@ -27,8 +28,9 @@ env: ## Create .env file from example
 
 ##@ Development
 
+# env mode can also be set via APP_ENV environment variable
 run-local: ## Run app in local mode
-	@go run $(CMD_API_PATH) --config $(CONFIG_FILE)
+	@go run $(CMD_API_PATH) --env=local
 
 AIR_BIN := $(shell go env GOPATH)/bin/air
 run-watch: ## Run with live reload

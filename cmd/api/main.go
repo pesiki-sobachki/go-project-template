@@ -1,15 +1,11 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"time"
 
-	"github.com/shanth1/gotools/conf"
 	"github.com/shanth1/gotools/consts"
 	"github.com/shanth1/gotools/ctx"
-	"github.com/shanth1/gotools/env"
-	"github.com/shanth1/gotools/flags"
 	"github.com/shanth1/gotools/log"
 	"github.com/shanth1/template/internal/app"
 	"github.com/shanth1/template/internal/config"
@@ -19,11 +15,6 @@ var (
 	CommitHash = "n/a"
 	BuildTime  = "n/a"
 )
-
-type Flags struct {
-	ConfigPath string `flag:"config" usage:"Path to the YAML config file"`
-	EnvPath    string `flag:"env" default:"" usage:"Path to the env file (empty by default)"`
-}
 
 // @title           Golang Project Template API
 // @version         1.0
@@ -48,19 +39,9 @@ func main() {
 
 	logger := log.New()
 
-	flagCfg := &Flags{}
-	if err := flags.RegisterFromStruct(flagCfg); err != nil {
-		logger.Fatal().Err(err).Msg("register flags")
-	}
-	flag.Parse()
-
-	cfg := &config.Config{}
-	if err := conf.Load(flagCfg.ConfigPath, cfg); err != nil {
+	cfg, err := config.Load()
+	if err != nil {
 		logger.Fatal().Err(err).Msg("load config")
-	}
-
-	if err := env.LoadIntoStruct(flagCfg.EnvPath, cfg); err != nil {
-		logger.Fatal().Err(err).Msg("load env into struct")
 	}
 
 	if err := cfg.Validate(); err != nil {
@@ -76,6 +57,8 @@ func main() {
 		Console:      cfg.Env != consts.EnvProd,
 		JSONOutput:   cfg.Env == consts.EnvProd,
 	}))
+
+	logger.Info().Str("env", cfg.Env).Msg("Application has been successfully configured")
 
 	ctx = log.NewContext(ctx, logger)
 	app.Run(ctx, shutdownCtx, cfg)

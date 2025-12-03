@@ -1,5 +1,4 @@
 addr: ":8080"
-env: "development"
 
 http:
   read_timeout: "10s"
