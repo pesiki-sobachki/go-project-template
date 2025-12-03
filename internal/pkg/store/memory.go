@@ -20,14 +20,14 @@ func NewMemoryStore[K comparable, V any]() *MemoryStore[K, V] {
 	}
 }
 
-func (s *MemoryStore[K, V]) Set(ctx context.Context, key K, value V) error {
+func (s *MemoryStore[K, V]) Set(_ context.Context, key K, value V) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.data[key] = value
 	return nil
 }
 
-func (s *MemoryStore[K, V]) Get(ctx context.Context, key K) (V, error) {
+func (s *MemoryStore[K, V]) Get(_ context.Context, key K) (V, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -39,7 +39,7 @@ func (s *MemoryStore[K, V]) Get(ctx context.Context, key K) (V, error) {
 	return val, nil
 }
 
-func (s *MemoryStore[K, V]) Delete(ctx context.Context, key K) error {
+func (s *MemoryStore[K, V]) Delete(_ context.Context, key K) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.data, key)
