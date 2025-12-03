@@ -1,0 +1,15 @@
+addr: ":8080"
+env: "local"
+
+http:
+  read_timeout: "10m"
+  write_timeout: "10m"
+  idle_timeout: "60s"
+  request_timeout: "10m"
+
+logger:
+  level: "trace"
+  app: "my-app"
+  service: "my-service"
+  udp_address: ""
+  enable_caller: false

@@ -7,7 +7,6 @@ build/
 tmp/
 coverage.out
 .env
-config/local.yaml
 docker-compose.yml
 Makefile
 README.md

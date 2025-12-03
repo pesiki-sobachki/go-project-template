@@ -3,7 +3,7 @@
 # --- Project Variables ---
 BINARY_NAME := goproject
 CMD_API_PATH := ./cmd/api
-CONFIG_FILE := config/local.yaml
+CONFIG_FILE := config/config.local.yaml
 
 # --- Build Variables ---
 COMMIT_HASH := $(shell git rev-parse --short HEAD 2>/dev/null || echo "none")
