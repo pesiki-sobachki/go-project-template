@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/shanth1/gotools/log"
+	"github.com/shanth1/gotools/logkeys"
 )
 
 func Logger(l log.Logger) func(next http.Handler) http.Handler {
@@ -18,9 +19,9 @@ func Logger(l log.Logger) func(next http.Handler) http.Handler {
 			next.ServeHTTP(ww, r)
 
 			l.Info().
-				Str("method", r.Method).
-				Str("path", r.URL.Path).
-				Int("status", ww.Status()).
+				Str(logkeys.HTTPMethod, r.Method).
+				Str(logkeys.HTTPPath, r.URL.Path).
+				Int(logkeys.HTTPStatus, ww.Status()).
 				Int("bytes", ww.BytesWritten()).
 				Dur("duration", time.Since(start)).
 				Str("ip", r.RemoteAddr).

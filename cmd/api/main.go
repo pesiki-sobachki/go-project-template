@@ -7,6 +7,7 @@ import (
 	"github.com/shanth1/gotools/consts"
 	"github.com/shanth1/gotools/ctx"
 	"github.com/shanth1/gotools/log"
+	"github.com/shanth1/gotools/logkeys"
 	"github.com/shanth1/template/internal/app"
 	"github.com/shanth1/template/internal/config"
 )
@@ -58,7 +59,7 @@ func main() {
 		JSONOutput:   cfg.Env == consts.EnvProd,
 	}))
 
-	logger.Info().Str("env", cfg.Env).Msg("Application has been successfully configured")
+	logger.Info().Str(logkeys.Env, cfg.Env).Msg("Application has been successfully configured")
 
 	ctx = log.NewContext(ctx, logger)
 	app.Run(ctx, shutdownCtx, cfg)
