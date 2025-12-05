@@ -42,7 +42,7 @@ run-prod: ## Run app in prod mode
 
 AIR_BIN := $(shell go env GOPATH)/bin/air
 run-watch: ## Run with live reload (local mode)
-	$(AIR_BIN) -c .air.toml
+	@$(AIR_BIN) -c .air.toml
 
 mocks: ## Generate all mocks
 	@echo "Generating mocks..."
@@ -50,7 +50,7 @@ mocks: ## Generate all mocks
 
 install-swag:
 	@if [ ! -f $(SWAG_BIN) ]; then \
-		echo "Installing swag..."; \
+		@echo "Installing swag..."; \
 		GOBIN=$(LOCAL_BIN) go install github.com/swaggo/swag/cmd/swag@latest; \
 	fi
 
@@ -60,8 +60,8 @@ swagger: install-swag ## Generate Swagger documentation
 	@$(SWAG_CMD) init -g $(CMD_API_PATH) --output docs --parseDependency --parseInternal
 
 audit: ## Run vulnerability check and verify dependencies
-	go list -u -m all
-	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+	@go list -u -m all
+	@go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 
 ##@ Testing & Quality
 
@@ -69,10 +69,10 @@ test: ## Run unit tests
 	@go test -v -race ./...
 
 lint: ## Run golangci-lint
-	golangci-lint run ./...
+	@golangci-lint run ./...
 
 lint-install: ## Install golangci-lint
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 ##@ Builds
 
@@ -98,7 +98,7 @@ docker-build: ## Build docker image with commit tag
 ##@ Quality Control
 
 format: ## Format code
-	go fmt ./...
+	@go fmt ./...
 
 # Объединяем всё в одну команду
 check: format swagger lint test audit ## Run all checks before commit
