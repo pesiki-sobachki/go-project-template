@@ -10,14 +10,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/shanth1/gotools/consts"
 	"github.com/shanth1/template/internal/pkg/response"
-)
-
-type contextKey string
-
-const (
-	UserIDKey contextKey = "user_id"
-	RoleKey   contextKey = "role"
 )
 
 // --- Basic Auth ---
@@ -107,10 +101,10 @@ func JWTAuth(secret string) func(http.Handler) http.Handler {
 
 				ctx := r.Context()
 				if sub, ok := claims["sub"].(string); ok {
-					ctx = context.WithValue(ctx, UserIDKey, sub)
+					ctx = context.WithValue(ctx, consts.CtxKeyUserID, sub)
 				}
 				if role, ok := claims["role"].(string); ok {
-					ctx = context.WithValue(ctx, RoleKey, role)
+					ctx = context.WithValue(ctx, consts.CtxKeyRole, role)
 				}
 
 				next.ServeHTTP(w, r.WithContext(ctx))

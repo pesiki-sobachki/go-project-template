@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/shanth1/gotools/consts"
@@ -32,13 +31,15 @@ var (
 // @host            localhost:8080
 // @BasePath        /
 func main() {
-	fmt.Printf("Starting Service\nCommit: %s\nBuild Time: %s\n", CommitHash, BuildTime)
-
 	ctx, shutdownCtx, cancel, shutdownCancel := ctx.WithGracefulShutdown(10 * time.Second)
 	defer cancel()
 	defer shutdownCancel()
 
 	logger := log.New()
+	logger.Info().
+		Str(logkeys.GitHash, CommitHash).
+		Str(logkeys.BuildTime, BuildTime).
+		Msg("starting service")
 
 	cfg, err := config.Load()
 	if err != nil {
@@ -59,7 +60,7 @@ func main() {
 		JSONOutput:   cfg.Env == consts.EnvProd,
 	}))
 
-	logger.Info().Str(logkeys.Env, cfg.Env).Msg("Application has been successfully configured")
+	logger.Info().Str(logkeys.Env, cfg.Env).Msg("application has been successfully configured")
 
 	ctx = log.NewContext(ctx, logger)
 	app.Run(ctx, shutdownCtx, cfg)

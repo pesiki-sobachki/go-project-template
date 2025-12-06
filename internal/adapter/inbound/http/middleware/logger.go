@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"net"
 	"net/http"
 	"time"
 
@@ -18,13 +19,15 @@ func Logger(l log.Logger) func(next http.Handler) http.Handler {
 
 			next.ServeHTTP(ww, r)
 
+			host, port, _ := net.SplitHostPort(r.RemoteAddr)
 			l.Info().
 				Str(logkeys.HTTPMethod, r.Method).
 				Str(logkeys.HTTPPath, r.URL.Path).
 				Int(logkeys.HTTPStatus, ww.Status()).
-				Int("bytes", ww.BytesWritten()).
-				Dur("duration", time.Since(start)).
-				Str("ip", r.RemoteAddr).
+				Int(logkeys.BytesIn, ww.BytesWritten()).
+				Dur(logkeys.Latency, time.Since(start)).
+				Str(logkeys.RemoteIP, host).
+				Str(logkeys.RemotePort, port).
 				Msg("http_request")
 		})
 	}
