@@ -34,7 +34,7 @@ type HealthResponse struct {
 // @Router       /health [get]
 func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	logger := log.FromContext(ctx)
+	logger := log.FromContextOr(ctx, h.logger)
 
 	if err := h.service.HealthCheck(ctx); err != nil {
 		logger.Error().Err(err).Msg("health check failed")
