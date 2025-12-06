@@ -4,9 +4,13 @@
 .idea
 bin/
 build/
+deployments/
 tmp/
 coverage.out
 .env
 docker-compose.yml
+LICENSE
 Makefile
 README.md
+README.ru.md
+TODO.md
