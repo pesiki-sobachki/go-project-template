@@ -22,6 +22,5 @@ func New(
 }
 
 func (s *Service) HealthCheck(_ context.Context) error {
-	s.logger.Info().Msg("starting health check...")
 	return nil
 }

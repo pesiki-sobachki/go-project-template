@@ -34,9 +34,10 @@ type HealthResponse struct {
 // @Router       /health [get]
 func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	logger := log.FromContext(ctx)
 
 	if err := h.service.HealthCheck(ctx); err != nil {
-		h.logger.Error().Err(err).Msg("health check failed")
+		logger.Error().Err(err).Msg("health check failed")
 		response.WithError(w, http.StatusServiceUnavailable, err)
 		return
 	}
