@@ -60,7 +60,7 @@ func main() {
 		JSONOutput:   cfg.Env == consts.EnvProd,
 	}))
 
-	logger.Info().Str(logkeys.Env, cfg.Env).Msg("application has been successfully configured")
+	logger.Info().Any(logkeys.Env, cfg.Env).Msg("application has been successfully configured")
 
 	ctx = log.NewContext(ctx, logger)
 	app.Run(ctx, shutdownCtx, cfg)

@@ -10,16 +10,17 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/shanth1/gotools/conf"
+	"github.com/shanth1/gotools/consts"
 	"github.com/shanth1/gotools/env"
 	"github.com/shanth1/gotools/flags"
 )
 
 type Config struct {
-	Env     string  `yaml:"-" env:"APP_ENV" validate:"required,oneof=local dev stage prod"`
-	Addr    string  `mapstructure:"addr" yaml:"addr" env:"ADDR" validate:"required,hostname_port"`
-	HTTP    HTTP    `mapstructure:"http" yaml:"http" validate:"required"`
-	Logger  Logger  `mapstructure:"logger" yaml:"logger" validate:"required"`
-	Metrics Metrics `mapstructure:"metrics" yaml:"metrics"`
+	Env     consts.Env `yaml:"-" env:"APP_ENV" validate:"required,oneof=local dev stage prod"`
+	Addr    string     `mapstructure:"addr" yaml:"addr" env:"ADDR" validate:"required,hostname_port"`
+	HTTP    HTTP       `mapstructure:"http" yaml:"http" validate:"required"`
+	Logger  Logger     `mapstructure:"logger" yaml:"logger" validate:"required"`
+	Metrics Metrics    `mapstructure:"metrics" yaml:"metrics"`
 }
 
 type HTTP struct {
@@ -82,6 +83,6 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("load env: %w", err)
 	}
 
-	cfg.Env = appEnv
+	cfg.Env = consts.Env(appEnv)
 	return cfg, nil
 }
