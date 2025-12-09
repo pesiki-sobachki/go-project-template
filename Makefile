@@ -4,8 +4,6 @@
 BINARY_NAME := goproject
 CMD_API_PATH := ./cmd/api/main.go
 
-CONFIG_FILE := config/config.local.yaml
-
 # --- Build Variables ---
 COMMIT_HASH := $(shell git rev-parse --short HEAD 2>/dev/null || echo "none")
 BUILD_TIME := $(shell date +%FT%T%z)
