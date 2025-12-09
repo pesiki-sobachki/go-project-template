@@ -86,6 +86,11 @@ build-linux: swagger ## Build binary for Linux (AMD64)
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $(GO_BUILD_FLAGS) $(LDFLAGS) -o build/$(BINARY_NAME)-linux $(CMD_API_PATH)
 	@echo "Build complete: build/$(BINARY_NAME)-linux"
 
+build-windows: swagger ## Build binary for Windows (AMD64)
+	@echo "Building Windows binary..."
+	@CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build $(GO_BUILD_FLAGS) $(LDFLAGS) -o build/$(BINARY_NAME)-windows.exe $(CMD_API_PATH)
+	@echo "Build complete: build/$(BINARY_NAME)-windows.exe"
+
 clean: ## Remove build artifacts
 	@rm -rf build/
 
