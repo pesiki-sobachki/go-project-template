@@ -1,0 +1,78 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  # /etc/systemd/system/<SERVICE_NAME>.service)
+  SERVICE_NAME: goproject
+  REMOTE_DIR: /opt/goproject
+  BINARY_NAME: goproject-linux
+  CONFIG_FILE_SOURCE: config/config.prod.yaml
+  CONFIG_FILE_TARGET: config/config.prod.yaml
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.5'
+          cache: true
+
+      - name: Generate Build Variables
+        id: vars
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "BUILD_TIME=$(date +%FT%T%z)" >> $GITHUB_OUTPUT
+
+      - name: Build Binary
+        run: |
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+            -trimpath \
+            -ldflags "-s -w -X main.CommitHash=${{ steps.vars.outputs.COMMIT_HASH }} -X main.BuildTime=${{ steps.vars.outputs.BUILD_TIME }}" \
+            -o build/${{ env.BINARY_NAME }} \
+            ./cmd/api/main.go
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Prepare Remote Directory
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ${{ env.REMOTE_DIR }}/config"
+
+      - name: Deploy Files
+        run: |
+          scp build/${{ env.BINARY_NAME }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_DIR }}/${{ env.BINARY_NAME }}.new
+
+          scp ${{ env.CONFIG_FILE_SOURCE }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_DIR }}/${{ env.CONFIG_FILE_TARGET }}
+
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.PROD_ENV_FILE }}" | ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat > ${{ env.REMOTE_DIR }}/.env"
+
+      - name: Switch Binary and Restart
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} <<EOF
+            set -e
+            mv ${{ env.REMOTE_DIR }}/${{ env.BINARY_NAME }}.new ${{ env.REMOTE_DIR }}/${{ env.BINARY_NAME }}
+            chmod +x ${{ env.REMOTE_DIR }}/${{ env.BINARY_NAME }}
+
+            sudo systemctl restart ${{ env.SERVICE_NAME }}
+          EOF

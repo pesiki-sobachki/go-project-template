@@ -1,0 +1,16 @@
+
+[Unit]
+Description=Go Project Service
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/opt/goproject
+
+ExecStart=/opt/goproject/goproject-linux --env=prod --env-path=.env
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
