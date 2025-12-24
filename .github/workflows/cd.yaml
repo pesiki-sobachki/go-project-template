@@ -20,7 +20,7 @@ on:
 env:
   # /etc/systemd/system/<SERVICE_NAME>.service)
   SERVICE_NAME: goproject
-  REMOTE_DIR: /opt/goproject
+  REMOTE_DIR: ${{ vars.REMOTE_DIR || '/opt/goproject' }}
   BINARY_NAME: goproject-linux
   CONFIG_FILE_SOURCE: config/config.prod.yaml
   CONFIG_FILE_TARGET: config/config.prod.yaml
