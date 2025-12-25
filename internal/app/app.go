@@ -3,8 +3,11 @@ package app
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 
 	"github.com/shanth1/gotools/log"
 	transport "github.com/shanth1/template/internal/adapter/driving/http"
@@ -12,47 +15,70 @@ import (
 	"github.com/shanth1/template/internal/core/service"
 )
 
-func Run(ctx, shutdownCtx context.Context, cfg *config.Config) {
-	logger := log.FromContext(ctx)
+type App struct {
+	cfg        *config.Config
+	logger     log.Logger
+	httpServer *http.Server
+}
 
-	// TODO: outbound adapters (repo, cache, filestorage, etc.)
-	// outbound adapter -> service constructor
+func New(cfg *config.Config, logger log.Logger) (*App, func(), error) {
+	var cleanups []func()
+	cleanup := func() {
+		for i := len(cleanups) - 1; i >= 0; i-- {
+			cleanups[i]()
+		}
+	}
 
+	// TODO: driven adapters (repo, cache, filestorage, etc.)
+	// TODO: driven adapters (close logic) -> cleanups
+
+	// driven adapter -> service constructor
 	svc := service.New(logger)
 	httpHandler := transport.NewRouter(cfg, svc, logger)
 
-	runHTTPServer(ctx, shutdownCtx, cfg, httpHandler, logger)
-}
-
-func runHTTPServer(
-	ctx context.Context,
-	shutdownCtx context.Context,
-	cfg *config.Config,
-	handler http.Handler,
-	logger log.Logger,
-) {
 	srv := &http.Server{
 		Addr:              cfg.Addr,
-		Handler:           handler,
+		Handler:           httpHandler,
 		ReadTimeout:       cfg.HTTP.ReadTimeout,
 		WriteTimeout:      cfg.HTTP.WriteTimeout,
 		IdleTimeout:       cfg.HTTP.IdleTimeout,
 		ReadHeaderTimeout: 2 * time.Second,
 	}
 
-	go func() {
-		logger.Info().Msgf("starting HTTP server on %s", cfg.Addr)
-		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Fatal().Err(err).Msg("http server failed")
+	return &App{
+		cfg:        cfg,
+		logger:     logger,
+		httpServer: srv,
+	}, cleanup, nil
+}
+
+func (a *App) Run(ctx context.Context) error {
+	g, gCtx := errgroup.WithContext(ctx)
+
+	// background workers are added in a similar way
+	g.Go(func() error {
+		a.logger.Info().Msgf("starting HTTP server on %s", a.cfg.Addr)
+		if err := a.httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			return fmt.Errorf("http server failed: %w", err)
 		}
-	}()
+		return nil
+	})
 
-	<-ctx.Done()
-	logger.Info().Msg("shutting down HTTP server...")
+	<-gCtx.Done()
 
-	if err := srv.Shutdown(shutdownCtx); err != nil {
-		logger.Error().Err(err).Msg("http server graceful shutdown failed")
-	} else {
-		logger.Info().Msg("http server stopped gracefully")
+	a.logger.Info().Msg("shutting down application...")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := a.httpServer.Shutdown(shutdownCtx); err != nil {
+		return fmt.Errorf("http server shutdown failed: %w", err)
 	}
+
+	if err := g.Wait(); err != nil && !errors.Is(err, context.Canceled) {
+		return err
+	}
+
+	a.logger.Info().Msg("application stopped gracefully")
+	return nil
 }

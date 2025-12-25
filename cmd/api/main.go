@@ -1,7 +1,7 @@
 package main
 
 import (
-	"time"
+	"os"
 
 	"github.com/shanth1/gotools/consts"
 	"github.com/shanth1/gotools/ctx"
@@ -31,23 +31,23 @@ var (
 // @host            localhost:8080
 // @BasePath        /
 func main() {
-	ctx, shutdownCtx, cancel, shutdownCancel := ctx.WithGracefulShutdown(10 * time.Second)
-	defer cancel()
-	defer shutdownCancel()
+	if err := run(); err != nil {
+		os.Exit(1)
+	}
+}
 
+func run() error {
 	logger := log.New()
-	logger.Info().
-		Str(logkeys.GitHash, CommitHash).
-		Str(logkeys.BuildTime, BuildTime).
-		Msg("starting service")
 
 	cfg, err := config.Load()
 	if err != nil {
-		logger.Fatal().Err(err).Msg("load config")
+		logger.Error().Err(err).Msg("load config failed")
+		return err
 	}
 
 	if err := cfg.Validate(); err != nil {
-		logger.Fatal().Err(err).Msg("invalid configuration")
+		logger.Error().Err(err).Msg("invalid configuration")
+		return err
 	}
 
 	logger = logger.WithOptions(log.WithConfig(log.Config{
@@ -60,8 +60,27 @@ func main() {
 		JSONOutput:   cfg.Env == consts.EnvProd,
 	}))
 
-	logger.Info().Any(logkeys.Env, cfg.Env).Msg("application has been successfully configured")
+	logger.Info().
+		Any(logkeys.Env, cfg.Env).
+		Str(logkeys.GitHash, CommitHash).
+		Str(logkeys.BuildTime, BuildTime).
+		Msg("application initializing...")
 
-	ctx = log.NewContext(ctx, logger)
-	app.Run(ctx, shutdownCtx, cfg)
+	application, cleanup, err := app.New(cfg, logger)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to init app")
+		return err
+	}
+	defer cleanup()
+
+	appCtx, cancel := ctx.GetAppCtx()
+	defer cancel()
+
+	logger.Info().Msg("starting application...")
+	if err := application.Run(appCtx); err != nil {
+		logger.Error().Err(err).Msg("application runtime error")
+		return err
+	}
+
+	return nil
 }
