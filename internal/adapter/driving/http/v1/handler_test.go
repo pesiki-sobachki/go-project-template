@@ -10,7 +10,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/shanth1/gotools/log"
-	v1 "github.com/shanth1/template/internal/adapter/inbound/http/v1"
+	v1 "github.com/shanth1/template/internal/adapter/driving/http/v1"
 	"github.com/shanth1/template/internal/core/port/mocks"
 )
 

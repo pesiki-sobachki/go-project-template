@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/shanth1/gotools/log"
-	transport "github.com/shanth1/template/internal/adapter/inbound/http"
+	transport "github.com/shanth1/template/internal/adapter/driving/http"
 	"github.com/shanth1/template/internal/config"
 	"github.com/shanth1/template/internal/core/service"
 )

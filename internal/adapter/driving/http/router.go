@@ -14,8 +14,8 @@ import (
 
 	"github.com/shanth1/gotools/consts"
 	"github.com/shanth1/gotools/log"
-	httpMw "github.com/shanth1/template/internal/adapter/inbound/http/middleware"
-	v1 "github.com/shanth1/template/internal/adapter/inbound/http/v1"
+	httpMw "github.com/shanth1/template/internal/adapter/driving/http/middleware"
+	v1 "github.com/shanth1/template/internal/adapter/driving/http/v1"
 	"github.com/shanth1/template/internal/config"
 	"github.com/shanth1/template/internal/core/port"
 )
