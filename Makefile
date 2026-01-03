@@ -103,5 +103,4 @@ docker-build: ## Build docker image with commit tag
 format: ## Format code
 	@go fmt ./...
 
-# Объединяем всё в одну команду
 check: format swagger lint test audit ## Run all checks before commit
